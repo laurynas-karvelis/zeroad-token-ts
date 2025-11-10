@@ -1,10 +1,4 @@
-import {
-  CLIENT_HEADERS,
-  ClientHeaderParseResult,
-  PROTOCOL_VERSION,
-  SITE_FEATURES,
-  ZEROAD_NETWORK_PUBLIC_KEY,
-} from "../constants";
+import { CLIENT_HEADERS, ClientHeaderParseResult, PROTOCOL_VERSION, SITE_FEATURES } from "../constants";
 import { bytesToUnixTimestamp, fromBase64, hasFeature, setFeatures, toBase64, unixTimestampToBytes } from "../helpers";
 import { importPrivateKey, importPublicKey, nonce, sign, verify } from "../subtle.crypto";
 import { log } from "../logger";
