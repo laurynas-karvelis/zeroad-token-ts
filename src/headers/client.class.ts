@@ -1,6 +1,13 @@
-import { CLIENT_HEADERS, ClientHeaderParseResult, PROTOCOL_VERSION, SITE_FEATURES } from "../constants";
+import {
+  CLIENT_HEADERS,
+  ClientHeaderParseResult,
+  PROTOCOL_VERSION,
+  SITE_FEATURES,
+  ZEROAD_NETWORK_PUBLIC_KEY,
+} from "../constants";
 import { bytesToUnixTimestamp, fromBase64, hasFeature, setFeatures, toBase64, unixTimestampToBytes } from "../helpers";
 import { importPrivateKey, importPublicKey, nonce, sign, verify } from "../subtle.crypto";
+import { log } from "../logger";
 
 const NONCE_BYTES = 4;
 const SEPARATOR = ".";
@@ -61,7 +68,9 @@ export class ClientHeader {
 
         return { version, expiresAt, expired, flags: flagsBytes[0] };
       }
-    } catch (e) {}
+    } catch (err) {
+      log("warn", "Could not decode client header value", { reason: (err as Error)?.message });
+    }
   }
 
   async processRequest(headerValue: string | undefined) {

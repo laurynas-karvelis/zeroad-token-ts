@@ -1,6 +1,7 @@
 import * as constants from "./constants";
 import { ServerHeader } from "./headers/server.class";
 import { ClientHeader } from "./headers/client.class";
+export { setLogLevel } from "./logger";
 
 export { ServerHeader, ClientHeader, constants };
 

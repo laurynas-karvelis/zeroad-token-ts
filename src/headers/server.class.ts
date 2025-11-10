@@ -7,6 +7,7 @@ import {
   WelcomeHeaderParseResult,
 } from "../constants";
 import { assert, base64ToUuid, setFeatures, uuidToBase64 } from "../helpers";
+import { log } from "../logger";
 
 const SEPARATOR = "^";
 
@@ -51,6 +52,8 @@ export class ServerHeader {
         flags: Number(flags),
         siteId,
       };
-    } catch (e) {}
+    } catch (err) {
+      log("warn", "Could not decode server header value", { reason: (err as Error)?.message });
+    }
   }
 }
