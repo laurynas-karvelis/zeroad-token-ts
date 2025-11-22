@@ -18,12 +18,11 @@ export class Site {
   }
 }
 
-let _defaultSite: Site;
+let defaultSite: Site;
 
 // Helpers for shorter syntax
-export const init = (options: ServerHeaderOptions) => (_defaultSite = new Site(options));
-export const processRequest = (headerValue: string | undefined) =>
-  _defaultSite.clientHeader.processRequest(headerValue);
-export const getClientHeaderName = () => _defaultSite.clientHeader.name;
-export const getServerHeaderName = () => _defaultSite.serverHeader.name;
-export const getServerHeaderValue = () => _defaultSite.serverHeader.value;
+export const init = (options: ServerHeaderOptions) => (defaultSite = new Site(options));
+export const processRequest = (headerValue: string | undefined) => defaultSite.clientHeader.processRequest(headerValue);
+export const getClientHeaderName = () => defaultSite.clientHeader.name;
+export const getServerHeaderName = () => defaultSite.serverHeader.name;
+export const getServerHeaderValue = () => defaultSite.serverHeader.value;

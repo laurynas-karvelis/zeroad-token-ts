@@ -1,0 +1,18 @@
+{
+  "name": "express-sample-app-integration",
+  "version": "1.0.0",
+  "description": "Sample Express.js app using @zeroad.network/token module",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "@zeroad.network/token": "^0.10.0"
+  },
+  "engines": {
+    "node": ">=18",
+    "bun": ">=1.3"
+  }
+}

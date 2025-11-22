@@ -40,7 +40,7 @@ bun add @zeroad.network/token
 
 # Examples
 
-Take the example as a reference only. The most basic, and honestly, quite complete use with `express` could look similar to this:
+Take the example as a reference only. The most basic, and honestly, quite complete use with `express` v.5 could look similar to this:
 
 ```js
 import express from "express";
@@ -56,22 +56,21 @@ const app = express();
 const port = 3000;
 
 // Welcome Header Value acquired during Site Registration process at Zero Ad Network platform
-const ZERO_AD_PARTNER_HEADER_VALUE = "AZqnKU56eIC7vCD1PPlwhg^1^3";
+const ZERO_AD_NETWORK_WELCOME_HEADER_VALUE = "AZqnKU56eIC7vCD1PPlwhg^1^3";
 
 // Initialize your Zero Ad Network module
-init({ value: ZERO_AD_PARTNER_HEADER_VALUE });
+init({ value: ZERO_AD_NETWORK_WELCOME_HEADER_VALUE });
 
 app
   .use((req, res, next) => {
     // X-Better-Web-Welcome header injection can could have it's own simple middleware like this:
-    res.header(getServerHeaderName(), getServerHeaderValue());
+    res.set(getServerHeaderName(), getServerHeaderValue());
+
+    next();
   })
   .use((req, res, next) => {
-    const result = processRequest(c.req.header(getClientHeaderName()));
-
-    res.locals.disableAds = result.shouldRemoveAds();
-    res.locals.removePaywalls = result.shouldEnablePremiumContentAccess();
-    res.locals.vipExperience = result.shouldEnableVipExperience();
+    const tokenContext = processRequest(req.get(getClientHeaderName()));
+    res.locals.tokenContext = tokenContext;
 
     next();
   })
@@ -79,7 +78,11 @@ app
     // The "locals.disableAds" variable can now be used to suppress rendering
     // of ads and 3rd party non-functional trackers.
 
-    // The "locals.removePaywalls" variable can allow users to bypass pay-walled content.
+    // If "locals.shouldRemoveAds" value is true, the ads should be disabled in the template.
+
+    // If "locals.shouldEnablePremiumContentAccess" value is true, the access to paywalled content should be enabled. Depending on site subscription pricing, the basic subscription access could be enabled without forcing visitor to pay.
+
+    // If "locals.shouldEnableVipExperience" value is true, the next tier subscription access should be enabled without forcing visitor to pay.
     res.render("index.ejs");
   });
 
@@ -87,6 +90,8 @@ app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`);
 });
 ```
+
+For more example implementations such as `Express.js`, `Hono` or `Fastify`, please go to [see more examples](https://github.com/laurynas-karvelis/zeroad-token/tree/main/examples/).
 
 P.S.: Each web request coming from active subscriber using their Zero Ad Network browser extension will incur a tiny fraction of CPU computation cost to verify the token data matches its encrypted signature. On modern web infrasctructure a request execution time will increase roughly by ~0.08ms to 0.2ms or so. Mileage might vary, but the impact is minimal.
 

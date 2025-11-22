@@ -27,16 +27,16 @@ describe("module", () => {
       const request = site.clientHeader.processRequest(validButExpiredClientHeaderValue);
 
       // expired token
-      expect(request.data).toEqual({
+      expect(request._raw).toEqual({
         expiresAt: new Date("2025-07-28T09:59:38.000Z"),
         version: PROTOCOL_VERSION.V_1,
         expired: true,
         flags: 7,
       });
 
-      expect(request.shouldRemoveAds()).toBe(false);
-      expect(request.shouldEnablePremiumContentAccess()).toBe(false);
-      expect(request.shouldEnableVipExperience()).toBe(false);
+      expect(request.shouldRemoveAds).toBe(false);
+      expect(request.shouldEnablePremiumContentAccess).toBe(false);
+      expect(request.shouldEnableVipExperience).toBe(false);
     });
   });
 
@@ -73,7 +73,7 @@ describe("module", () => {
         const processedValue = processRequest(validButExpiredClientHeaderValue);
         expect(processedValue).toEqual(
           expect.objectContaining({
-            data: {
+            _raw: {
               expiresAt: new Date("2025-07-28T09:59:38.000Z"),
               version: PROTOCOL_VERSION.V_1,
               expired: true,
@@ -82,9 +82,9 @@ describe("module", () => {
           })
         );
 
-        expect(typeof processedValue.shouldRemoveAds).toBe("function");
-        expect(typeof processedValue.shouldEnablePremiumContentAccess).toBe("function");
-        expect(typeof processedValue.shouldEnableVipExperience).toBe("function");
+        expect(typeof processedValue.shouldRemoveAds).toBe("boolean");
+        expect(typeof processedValue.shouldEnablePremiumContentAccess).toBe("boolean");
+        expect(typeof processedValue.shouldEnableVipExperience).toBe("boolean");
       });
     });
   });

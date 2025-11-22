@@ -1,0 +1,19 @@
+{
+  "name": "hono-sample-app-integration",
+  "version": "1.0.0",
+  "description": "Sample Hono app integrating @zeroad.network/token module",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "hono": "^4.10.6",
+    "@hono/node-server": "^1.19.6",
+    "@zeroad.network/token": "^0.10.0"
+  },
+  "engines": {
+    "node": ">=18",
+    "bun": ">=1.3"
+  }
+}

@@ -68,10 +68,16 @@ export class ClientHeader {
   processRequest(headerValue: string | undefined) {
     const data = this.decode(headerValue as string);
     return {
-      data,
-      shouldRemoveAds: () => shouldRemoveAds(data),
-      shouldEnablePremiumContentAccess: () => shouldEnablePremiumContentAccess(data),
-      shouldEnableVipExperience: () => shouldEnableVipExperience(data),
+      _raw: data,
+      get shouldRemoveAds() {
+        return shouldRemoveAds(data);
+      },
+      get shouldEnablePremiumContentAccess() {
+        return shouldEnablePremiumContentAccess(data);
+      },
+      get shouldEnableVipExperience() {
+        return shouldEnableVipExperience(data);
+      },
     };
   }
 }
