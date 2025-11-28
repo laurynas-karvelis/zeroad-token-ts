@@ -86,7 +86,7 @@ const test = (data: ClientHeaderParseResult, feature: SITE_FEATURES) => {
   return (data && !data?.expired && hasFeature(data?.flags, feature)) || false;
 };
 
-const shouldRemoveAds = (data: ClientHeaderParseResult) => test(data, SITE_FEATURES.ADLESS_EXPERIENCE);
+const shouldRemoveAds = (data: ClientHeaderParseResult) => test(data, SITE_FEATURES.AD_LESS_EXPERIENCE);
 const shouldEnableVipExperience = (data: ClientHeaderParseResult) => test(data, SITE_FEATURES.VIP_EXPERIENCE);
 const shouldEnablePremiumContentAccess = (data: ClientHeaderParseResult) =>
   test(data, SITE_FEATURES.PREMIUM_CONTENT_ACCESS);

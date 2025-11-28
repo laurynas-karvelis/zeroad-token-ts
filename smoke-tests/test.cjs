@@ -13,10 +13,11 @@ const {
 
 (() => {
   const siteId = "EF005186-B911-4D77-83BD-A7D4E93F6124";
-  init({ siteId, features: [SITE_FEATURES.ADLESS_EXPERIENCE] });
+  init({ siteId, features: [SITE_FEATURES.AD_LESS_EXPERIENCE] });
 
   assert.equal(getServerHeaderName(), SERVER_HEADERS.WELCOME);
   assert.equal(getClientHeaderName(), CLIENT_HEADERS.HELLO);
+  // cspell:disable-next-line
   assert.equal(getServerHeaderValue(), "7wBRhrkRTXeDvafU6T9hJA^1^1");
 
   const result = processRequest(

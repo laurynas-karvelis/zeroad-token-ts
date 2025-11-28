@@ -8,11 +8,12 @@ describe("module", () => {
 
   describe("Site class", () => {
     const siteId = "073C3D79-B960-4335-B948-416AC1E3DBD4";
-    const features = [SITE_FEATURES.ADLESS_EXPERIENCE, SITE_FEATURES.PREMIUM_CONTENT_ACCESS];
+    const features = [SITE_FEATURES.AD_LESS_EXPERIENCE, SITE_FEATURES.PREMIUM_CONTENT_ACCESS];
 
     test("should generate a valid server header", () => {
       const site = new Site({ siteId, features });
       expect(site.serverHeader.name).toEqual(SERVER_HEADERS.WELCOME);
+      // cspell:disable-next-line
       expect(site.serverHeader.value).toBe("Bzw9eblgQzW5SEFqwePb1A^1^3");
     });
 
@@ -22,7 +23,7 @@ describe("module", () => {
     });
 
     test("should parse client header data correctly with the official public key", () => {
-      const site = new Site({ siteId, features: [SITE_FEATURES.ADLESS_EXPERIENCE] });
+      const site = new Site({ siteId, features: [SITE_FEATURES.AD_LESS_EXPERIENCE] });
 
       const request = site.clientHeader.processRequest(validButExpiredClientHeaderValue);
 
@@ -43,7 +44,7 @@ describe("module", () => {
   describe("default Site instance helpers", () => {
     const siteId = "94F37AA5-0DA8-462E-9DE9-DCDE26FB470A";
     const features = [
-      SITE_FEATURES.ADLESS_EXPERIENCE,
+      SITE_FEATURES.AD_LESS_EXPERIENCE,
       SITE_FEATURES.PREMIUM_CONTENT_ACCESS,
       SITE_FEATURES.VIP_EXPERIENCE,
     ];

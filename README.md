@@ -56,7 +56,7 @@ const app = express();
 const port = 3000;
 
 // Welcome Header Value acquired during Site Registration process at Zero Ad Network platform
-const ZERO_AD_NETWORK_WELCOME_HEADER_VALUE = "AZqnKU56eIC7vCD1PPlwhg^1^3";
+const ZERO_AD_NETWORK_WELCOME_HEADER_VALUE = "AZqnKU56eIC7vCD1PPlwHg^1^3";
 
 // Initialize your Zero Ad Network module
 init({ value: ZERO_AD_NETWORK_WELCOME_HEADER_VALUE });
@@ -93,7 +93,7 @@ app.listen(port, () => {
 
 For more example implementations such as `Express.js`, `Hono` or `Fastify`, please go to [see more examples](https://github.com/laurynas-karvelis/zeroad-token/tree/main/examples/).
 
-P.S.: Each web request coming from active subscriber using their Zero Ad Network browser extension will incur a tiny fraction of CPU computation cost to verify the token data matches its encrypted signature. On modern web infrasctructure a request execution time will increase roughly by ~0.08ms to 0.2ms or so. Mileage might vary, but the impact is minimal.
+P.S.: Each web request coming from active subscriber using their Zero Ad Network browser extension will incur a tiny fraction of CPU computation cost to verify the token data matches its encrypted signature. On modern web infrastructure a request execution time will increase roughly by ~0.08ms to 0.2ms or so. Mileage might vary, but the impact is minimal.
 
 # Final thoughts
 

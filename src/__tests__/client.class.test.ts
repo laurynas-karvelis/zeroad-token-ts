@@ -11,7 +11,7 @@ describe("ClientHeader class", () => {
 
       const expiresAt = new Date(Date.now() + 24 * 3600 * 1000);
       const features = [
-        SITE_FEATURES.ADLESS_EXPERIENCE,
+        SITE_FEATURES.AD_LESS_EXPERIENCE,
         SITE_FEATURES.PREMIUM_CONTENT_ACCESS,
         SITE_FEATURES.VIP_EXPERIENCE,
       ];
@@ -35,7 +35,7 @@ describe("ClientHeader class", () => {
 
       const expiresAt = new Date(Date.now() - 24 * 3600 * 1000);
       const features = [
-        SITE_FEATURES.ADLESS_EXPERIENCE,
+        SITE_FEATURES.AD_LESS_EXPERIENCE,
         SITE_FEATURES.PREMIUM_CONTENT_ACCESS,
         SITE_FEATURES.VIP_EXPERIENCE,
       ];
@@ -59,7 +59,7 @@ describe("ClientHeader class", () => {
 
       const expiresAt = new Date(Date.now() - 24 * 3600 * 1000);
       const features = [
-        SITE_FEATURES.ADLESS_EXPERIENCE,
+        SITE_FEATURES.AD_LESS_EXPERIENCE,
         SITE_FEATURES.PREMIUM_CONTENT_ACCESS,
         SITE_FEATURES.VIP_EXPERIENCE,
       ];
