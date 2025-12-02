@@ -1,6 +1,6 @@
 {
   "name": "@zeroad.network/token",
-  "version": "0.11.3",
+  "version": "0.12.0",
   "license": "Apache-2.0",
   "repository": "github:laurynas-karvelis/zeroad-token-ts",
   "homepage": "https://zeroad.network",
@@ -42,10 +42,14 @@
       "default": "./dist/browser.mjs"
     }
   },
+  "output": {
+    "exports": "named"
+  },
   "scripts": {
     "keys:generate": "bun run ./src/tools/cli.ts",
     "prettier": "prettier . --write",
-    "build": "pkgroll --target=node18"
+    "build": "pkgroll --target=node18",
+    "test": "bun test"
   },
   "dependencies": {},
   "devDependencies": {

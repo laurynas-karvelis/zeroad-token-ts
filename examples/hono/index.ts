@@ -1,6 +1,6 @@
 import { randomUUID } from "crypto";
 
-import express from "express";
+import { Context, Hono, Next } from "hono";
 import { ZeroAdNetwork, FEATURES } from "@zeroad.network/token";
 
 /**
@@ -24,30 +24,36 @@ const zeroAd = ZeroAdNetwork({
 });
 
 // -----------------------------------------------------------------------------
+// Hono app
+// -----------------------------------------------------------------------------
+type TokenContext = ReturnType<typeof zeroAd.parseToken>;
+
+const app = new Hono<{ Variables: { tokenContext: TokenContext } }>();
+
+// -----------------------------------------------------------------------------
 // Middleware
 // -----------------------------------------------------------------------------
-function tokenMiddleware(req, res, next) {
-  // Inject server header into every response.
-  res.setHeader(zeroAd.SERVER_HEADER_NAME, zeroAd.SERVER_HEADER_VALUE);
+app.use("*", async (c: Context, next: Next) => {
+  // Inject server header into every response
+  c.header(zeroAd.SERVER_HEADER_NAME, zeroAd.SERVER_HEADER_VALUE);
 
   // Process request token from incoming client token header value.
-  // And attach processed token info to request for downstream usage.
-  req.tokenContext = zeroAd.parseToken(req.headers[zeroAd.CLIENT_HEADER_NAME]);
+  const tokenContext = zeroAd.parseToken(c.req.header(zeroAd.CLIENT_HEADER_NAME));
 
-  next();
-}
+  // Attach processed token info to context for downstream usage
+  c.set("tokenContext", tokenContext);
+
+  await next();
+});
 
 // -----------------------------------------------------------------------------
-// Express app
+// Routes
 // -----------------------------------------------------------------------------
-const app = express();
-app.use(tokenMiddleware);
 
-app.get("/", (req, res) => {
-  // Example: use tokenContext to render template
-  const tokenContext = req.tokenContext;
+app.get("/", (c) => {
+  const tokenContext = c.get("tokenContext");
 
-  const state = (value) => (value && '<b style="background: #b0b0b067">YES</b>') || "NO";
+  const state = (value: boolean) => (value && '<b style="background: #b0b0b067">YES</b>') || "NO";
   const template = `
     <html>
       <body>
@@ -67,20 +73,22 @@ app.get("/", (req, res) => {
     </html>
   `;
 
-  res.send(template);
+  return c.html(template);
 });
 
-app.get("/json", (req, res) => {
-  // req.tokenContext is available here too
-  res.json({
+app.get("/json", (c) => {
+  const tokenContext = c.get("tokenContext");
+  return c.json({
     message: "OK",
-    tokenContext: req.tokenContext,
+    tokenContext,
   });
 });
 
 // -----------------------------------------------------------------------------
-app.listen(3000, () => {
-  console.log(`Express server listening at port 3000
+// Start server (for Node.js)
+
+Bun.serve({ fetch: app.fetch, port: 3000 });
+
+console.log(`Hono server listening at port 3000
     · HTML template example:        http://localhost:3000
     · Plain JSON endpoint example:  http://localhost:3000/json`);
-});

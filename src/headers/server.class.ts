@@ -2,30 +2,52 @@ import {
   CURRENT_PROTOCOL_VERSION,
   PROTOCOL_VERSION,
   SERVER_HEADERS,
-  SITE_FEATURES,
+  FEATURES,
   ServerHeaderOptions,
   UUID,
   WelcomeHeaderParseResult,
 } from "../constants";
-import { assert, base64ToUuid, setFeatures, uuidToBase64 } from "../helpers";
+import {
+  assert,
+  base64ToUuid,
+  getSiteFeaturesNative,
+  hasFeature,
+  isObject,
+  setFeatures,
+  uuidToBase64,
+} from "../helpers";
 import { log } from "../logger";
 
 const SEPARATOR = "^";
+const SITE_FEATURES_NATIVE = getSiteFeaturesNative();
 
 export class ServerHeader {
-  name = SERVER_HEADERS.WELCOME;
-  value: string;
+  NAME = SERVER_HEADERS.WELCOME.toLowerCase();
+  VALUE: string;
 
   constructor(options: ServerHeaderOptions) {
-    if ("value" in options) {
-      this.value = options.value;
-    } else {
+    if (typeof options === "string") {
+      if (!options.length) {
+        throw new Error("ServerHeader: non-empty welcome header string value must be provided");
+      }
+
+      this.VALUE = options;
+    } else if (isObject(options) && "siteId" in options && "features" in options) {
       const { siteId, features } = options;
-      this.value = this.encode(siteId, features);
+
+      if (typeof siteId !== "string" || !siteId.length || !Array.isArray(features) || !features.length) {
+        throw new Error("ServerHeader options must be provided");
+      }
+
+      this.VALUE = this.encode(siteId, features);
+    } else {
+      throw new Error(
+        "ServerHeader: non-empty welcome header string value or { siteId, features } options must be provided"
+      );
     }
   }
 
-  encode(siteId: UUID, features: SITE_FEATURES[]) {
+  encode(siteId: UUID, features: FEATURES[]) {
     const flags = setFeatures(0, features);
     const encodedSiteId = uuidToBase64(siteId);
 
@@ -40,7 +62,6 @@ export class ServerHeader {
       assert(parts.length === 3, "Invalid header value format");
 
       const [encodedSiteId, protocolVersion, flags] = parts;
-
       assert(
         Object.values(PROTOCOL_VERSION).includes(Number(protocolVersion)),
         "Invalid or unsupported protocol version"
@@ -49,13 +70,16 @@ export class ServerHeader {
       const siteId = base64ToUuid(encodedSiteId);
       assert(siteId.length === 36, "Invalid siteId value");
 
-      if (PROTOCOL_VERSION.V_1) {
-        assert([1, 2, 3, 4, 5, 6, 7].includes(Number(flags)), "Invalid flags value");
+      assert(Number(flags).toFixed(0).toString() === flags, "Invalid flags number");
+
+      let features: (keyof typeof FEATURES)[] = [];
+      for (const [feature, shift] of SITE_FEATURES_NATIVE) {
+        if (hasFeature(Number(flags), shift)) features.push(feature);
       }
 
       return {
         version: Number(protocolVersion),
-        flags: Number(flags),
+        features,
         siteId,
       };
     } catch (err) {

@@ -1,37 +1,27 @@
 const assert = require("node:assert");
-const {
-  init,
-  getServerHeaderName,
-  getServerHeaderValue,
-  processRequest,
-  getClientHeaderName,
-  SERVER_HEADERS,
-  CLIENT_HEADERS,
-  SITE_FEATURES,
-  PROTOCOL_VERSION,
-} = require("../dist/index.cjs");
+const { ZeroAdNetwork, FEATURES, SERVER_HEADERS, CLIENT_HEADERS } = require("../dist/index.cjs");
 
 (() => {
-  const siteId = "EF005186-B911-4D77-83BD-A7D4E93F6124";
-  init({ siteId, features: [SITE_FEATURES.AD_LESS_EXPERIENCE] });
-
-  assert.equal(getServerHeaderName(), SERVER_HEADERS.WELCOME);
-  assert.equal(getClientHeaderName(), CLIENT_HEADERS.HELLO);
-  // cspell:disable-next-line
-  assert.equal(getServerHeaderValue(), "7wBRhrkRTXeDvafU6T9hJA^1^1");
-
-  const result = processRequest(
-    "Aav2IXRoh0oKBw==.2yZfC2/pM9DWfgX+von4IgWLmN9t67HJHLiee/gx4+pFIHHurwkC3PCHT1Kaz0yUhx3crUaxST+XLlRtJYacAQ=="
-  );
-
-  assert.deepEqual(result._raw, {
-    expiresAt: new Date("2025-07-28T09:59:38.000Z"),
-    version: PROTOCOL_VERSION.V_1,
-    expired: true,
-    flags: 7,
+  const zeroAd = ZeroAdNetwork({
+    siteId: "EF005186-B911-4D77-83BD-A7D4E93F6124",
+    features: [FEATURES.ADS_OFF],
   });
 
-  assert.equal(result.shouldRemoveAds, false);
-  assert.equal(result.shouldEnablePremiumContentAccess, false);
-  assert.equal(result.shouldEnableVipExperience, false);
+  assert.equal(zeroAd.SERVER_HEADER_NAME, SERVER_HEADERS.WELCOME.toLowerCase());
+  assert.equal(zeroAd.CLIENT_HEADER_NAME, CLIENT_HEADERS.HELLO.toLowerCase());
+  // cspell:disable-next-line
+  assert.equal(zeroAd.SERVER_HEADER_VALUE, "7wBRhrkRTXeDvafU6T9hJA^1^1");
+
+  const validExpiredToken =
+    "AbXze/EaFy9pEwAAAA==.hQHwRDR4i8wCV8+gYUxgFGd2yXHUMORnhetz+5Aloc84d3vz1dyGi3GDZ5Y4USc2RemCzYaKLltsi+Iu6NJMAQ==";
+
+  assert.deepEqual(zeroAd.parseToken(validExpiredToken), {
+    ADS_OFF: false,
+    COOKIE_CONSENT_OFF: false,
+    MARKETING_DIALOG_OFF: false,
+    CONTENT_PAYWALL_OFF: false,
+    SUBSCRIPTION_ACCESS_ON: false,
+  });
+
+  console.info("Passed.");
 })();

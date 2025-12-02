@@ -1,91 +1,36 @@
 import { describe, test, expect } from "bun:test";
-import { getClientHeaderName, getServerHeaderName, getServerHeaderValue, init, processRequest, Site } from "../index";
-import { CLIENT_HEADERS, PROTOCOL_VERSION, SERVER_HEADERS, SITE_FEATURES } from "../constants";
+import { ZeroAdNetwork, CLIENT_HEADERS, FEATURES, SERVER_HEADERS } from "../index";
 
 describe("module", () => {
   const validButExpiredClientHeaderValue =
     "Aav2IXRoh0oKBw==.2yZfC2/pM9DWfgX+von4IgWLmN9t67HJHLiee/gx4+pFIHHurwkC3PCHT1Kaz0yUhx3crUaxST+XLlRtJYacAQ==";
 
-  describe("Site class", () => {
+  describe("Default export", () => {
     const siteId = "073C3D79-B960-4335-B948-416AC1E3DBD4";
-    const features = [SITE_FEATURES.AD_LESS_EXPERIENCE, SITE_FEATURES.PREMIUM_CONTENT_ACCESS];
 
     test("should generate a valid server header", () => {
-      const site = new Site({ siteId, features });
-      expect(site.serverHeader.name).toEqual(SERVER_HEADERS.WELCOME);
+      const zeroAd = ZeroAdNetwork({ siteId, features: [FEATURES.ADS_OFF, FEATURES.COOKIE_CONSENT_OFF] });
+      expect(zeroAd.SERVER_HEADER_NAME).toEqual(SERVER_HEADERS.WELCOME.toLowerCase());
       // cspell:disable-next-line
-      expect(site.serverHeader.value).toBe("Bzw9eblgQzW5SEFqwePb1A^1^3");
+      expect(zeroAd.SERVER_HEADER_VALUE).toBe("Bzw9eblgQzW5SEFqwePb1A^1^3");
     });
 
     test("should contain correct client hello header name", () => {
-      const site = new Site({ siteId, features: [] });
-      expect(site.clientHeader.name).toEqual(CLIENT_HEADERS.HELLO);
+      const zeroAd = ZeroAdNetwork({ siteId, features: [FEATURES.ADS_OFF] });
+      expect(zeroAd.CLIENT_HEADER_NAME).toEqual(CLIENT_HEADERS.HELLO.toLowerCase());
     });
 
     test("should parse client header data correctly with the official public key", () => {
-      const site = new Site({ siteId, features: [SITE_FEATURES.AD_LESS_EXPERIENCE] });
+      const zeroAd = ZeroAdNetwork({ siteId, features: [FEATURES.ADS_OFF] });
+      const request = zeroAd.parseToken(validButExpiredClientHeaderValue);
 
-      const request = site.clientHeader.processRequest(validButExpiredClientHeaderValue);
-
-      // expired token
-      expect(request._raw).toEqual({
-        expiresAt: new Date("2025-07-28T09:59:38.000Z"),
-        version: PROTOCOL_VERSION.V_1,
-        expired: true,
-        flags: 7,
-      });
-
-      expect(request.shouldRemoveAds).toBe(false);
-      expect(request.shouldEnablePremiumContentAccess).toBe(false);
-      expect(request.shouldEnableVipExperience).toBe(false);
-    });
-  });
-
-  describe("default Site instance helpers", () => {
-    const siteId = "94F37AA5-0DA8-462E-9DE9-DCDE26FB470A";
-    const features = [
-      SITE_FEATURES.AD_LESS_EXPERIENCE,
-      SITE_FEATURES.PREMIUM_CONTENT_ACCESS,
-      SITE_FEATURES.VIP_EXPERIENCE,
-    ];
-
-    init({ siteId, features });
-
-    describe("getServerHeaderName()", () => {
-      test("should return correct Welcome header name", () => {
-        expect(getServerHeaderName()).toEqual(SERVER_HEADERS.WELCOME);
-      });
-    });
-
-    describe("getServerHeaderValue()", () => {
-      test("should return correct Welcome header value", () => {
-        expect(getServerHeaderValue()).toEqual("lPN6pQ2oRi6d6dzeJvtHCg^1^7");
-      });
-    });
-
-    describe("getClientHeaderName()", () => {
-      test("should return correct Client Hello header name", () => {
-        expect(getClientHeaderName()).toEqual(CLIENT_HEADERS.HELLO);
-      });
-    });
-
-    describe("processRequest()", () => {
-      test("should return correct Client Hello header value", () => {
-        const processedValue = processRequest(validButExpiredClientHeaderValue);
-        expect(processedValue).toEqual(
-          expect.objectContaining({
-            _raw: {
-              expiresAt: new Date("2025-07-28T09:59:38.000Z"),
-              version: PROTOCOL_VERSION.V_1,
-              expired: true,
-              flags: 7,
-            },
-          })
-        );
-
-        expect(typeof processedValue.shouldRemoveAds).toBe("boolean");
-        expect(typeof processedValue.shouldEnablePremiumContentAccess).toBe("boolean");
-        expect(typeof processedValue.shouldEnableVipExperience).toBe("boolean");
+      // expired token forces everything to be false
+      expect(request).toEqual({
+        ADS_OFF: false,
+        COOKIE_CONSENT_OFF: false,
+        MARKETING_DIALOG_OFF: false,
+        CONTENT_PAYWALL_OFF: false,
+        SUBSCRIPTION_ACCESS_ON: false,
       });
     });
   });

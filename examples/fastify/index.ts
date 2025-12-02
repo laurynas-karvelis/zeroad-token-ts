@@ -1,6 +1,6 @@
 import { randomUUID } from "crypto";
 
-import express from "express";
+import Fastify from "fastify";
 import { ZeroAdNetwork, FEATURES } from "@zeroad.network/token";
 
 /**
@@ -24,30 +24,37 @@ const zeroAd = ZeroAdNetwork({
 });
 
 // -----------------------------------------------------------------------------
-// Middleware
+// Fastify app
 // -----------------------------------------------------------------------------
-function tokenMiddleware(req, res, next) {
-  // Inject server header into every response.
-  res.setHeader(zeroAd.SERVER_HEADER_NAME, zeroAd.SERVER_HEADER_VALUE);
+const app = Fastify();
 
-  // Process request token from incoming client token header value.
-  // And attach processed token info to request for downstream usage.
-  req.tokenContext = zeroAd.parseToken(req.headers[zeroAd.CLIENT_HEADER_NAME]);
-
-  next();
+declare module "fastify" {
+  interface FastifyRequest {
+    tokenContext: ReturnType<typeof zeroAd.parseToken>;
+  }
 }
 
 // -----------------------------------------------------------------------------
-// Express app
+// Middleware (Fastify hook)
 // -----------------------------------------------------------------------------
-const app = express();
-app.use(tokenMiddleware);
+app.addHook("onRequest", async (request, reply) => {
+  // Inject server header into every response
+  reply.header(zeroAd.SERVER_HEADER_NAME, zeroAd.SERVER_HEADER_VALUE);
 
-app.get("/", (req, res) => {
+  // Process request token from incoming client token header value.
+  // And attach processed token info to request for downstream usage.
+  request.tokenContext = zeroAd.parseToken(request.headers[zeroAd.CLIENT_HEADER_NAME]);
+});
+
+// -----------------------------------------------------------------------------
+// Routes
+// -----------------------------------------------------------------------------
+
+app.get("/", async (request, reply) => {
   // Example: use tokenContext to render template
-  const tokenContext = req.tokenContext;
+  const tokenContext = request.tokenContext;
 
-  const state = (value) => (value && '<b style="background: #b0b0b067">YES</b>') || "NO";
+  const state = (value: boolean) => (value && '<b style="background: #b0b0b067">YES</b>') || "NO";
   const template = `
     <html>
       <body>
@@ -67,20 +74,21 @@ app.get("/", (req, res) => {
     </html>
   `;
 
-  res.send(template);
+  reply.type("text/html").send(template);
 });
 
-app.get("/json", (req, res) => {
-  // req.tokenContext is available here too
-  res.json({
+app.get("/json", async (request) => {
+  return {
     message: "OK",
-    tokenContext: req.tokenContext,
-  });
+    tokenContext: request.tokenContext,
+  };
 });
 
 // -----------------------------------------------------------------------------
-app.listen(3000, () => {
-  console.log(`Express server listening at port 3000
+// Start server
+// -----------------------------------------------------------------------------
+app.listen({ port: 3000 }, () => {
+  console.log(`Fastify server listening at port 3000
     · HTML template example:        http://localhost:3000
     · Plain JSON endpoint example:  http://localhost:3000/json`);
 });

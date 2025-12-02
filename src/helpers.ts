@@ -1,4 +1,15 @@
-import { SITE_FEATURES, UUID } from "./constants";
+import { FEATURES, UUID } from "./constants";
+
+type SiteFeaturesNative = [keyof typeof FEATURES, FEATURES][];
+let SITE_FEATURES_NATIVE: SiteFeaturesNative;
+
+export const isObject = (value: unknown) => typeof value === "object" && value !== null && !Array.isArray(value);
+
+export const getSiteFeaturesNative = (): SiteFeaturesNative => {
+  if (SITE_FEATURES_NATIVE?.length) return SITE_FEATURES_NATIVE;
+
+  return (SITE_FEATURES_NATIVE = Object.entries(FEATURES).filter(([key]) => isNaN(Number(key))) as SiteFeaturesNative);
+};
 
 export const toBase64 = (data: Uint8Array) => {
   if (typeof data.toBase64 === "function") return data.toBase64() as string;
@@ -62,23 +73,12 @@ export const base64ToUuid = (input: string): string => {
   ].join("-");
 };
 
-export const unixTimestampToBytes = (date: Date) => {
-  const buffer = new ArrayBuffer(4);
-  new DataView(buffer).setUint32(0, Math.floor(date.getTime() / 1000));
-  return new Uint8Array(buffer);
-};
-
-export const bytesToUnixTimestamp = (bytes: Uint8Array) => {
-  const u32int = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength).getUint32(0);
-  return new Date(u32int * 1000);
-};
-
 export const assert = (value: unknown, message: string) => {
   if (!value) throw new Error(message);
 };
 
-export const hasFeature = (flags: number, feature: SITE_FEATURES) => Boolean(flags & feature);
-export const clearFeature = (flags: number, feature: SITE_FEATURES) => (flags &= ~feature);
-export const toggleFeature = (flags: number, feature: SITE_FEATURES) => (flags ^= feature);
-export const setFeatures = (flags: number = 0, features: SITE_FEATURES[] = []) =>
+export const hasFeature = (flags: number, feature: FEATURES) => Boolean(flags & feature);
+export const clearFeature = (flags: number, feature: FEATURES) => (flags &= ~feature);
+export const toggleFeature = (flags: number, feature: FEATURES) => (flags ^= feature);
+export const setFeatures = (flags: number = 0, features: FEATURES[] = []) =>
   (flags |= features.reduce((acc, feature) => acc | feature, flags || 0));

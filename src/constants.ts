@@ -4,10 +4,17 @@
  */
 export const ZEROAD_NETWORK_PUBLIC_KEY: string = "MCowBQYDK2VwAyEAignXRaTQtxEDl4ThULucKNQKEEO2Lo5bEO8qKwjSDVs=";
 
-export enum SITE_FEATURES {
-  AD_LESS_EXPERIENCE = 1 << 0,
-  PREMIUM_CONTENT_ACCESS = 1 << 1,
-  VIP_EXPERIENCE = 1 << 2,
+export enum FEATURES {
+  /** Render no advertisements anywhere on the page */
+  ADS_OFF = 1 << 0,
+  /** Render no Cookie Consent screens (headers, footers or dialogs) on the page with complete OPT-OUT for non-functional trackers */
+  COOKIE_CONSENT_OFF = 1 << 1,
+  /** Render no marketing dialogs or popups such as newsletter, promotion etc. on the page */
+  MARKETING_DIALOG_OFF = 1 << 2,
+  /** Provide automatic access to otherwise paywalled content such as articles, news etc. */
+  CONTENT_PAYWALL_OFF = 1 << 3,
+  /** Provide automatic access to site features provided behind a SaaS at least the basic subscription plan */
+  SUBSCRIPTION_ACCESS_ON = 1 << 4,
 }
 
 export type UUID = string;
@@ -26,28 +33,23 @@ export enum PROTOCOL_VERSION {
 
 export const CURRENT_PROTOCOL_VERSION = PROTOCOL_VERSION.V_1;
 
-export type ServerHeaderSimpleOptions = {
-  value: string;
-};
-
 export type ServerHeaderExtendedOptions = {
   siteId: UUID;
-  features: SITE_FEATURES[];
+  features: FEATURES[];
 };
 
-export type ServerHeaderOptions = ServerHeaderExtendedOptions | ServerHeaderSimpleOptions;
+export type ServerHeaderOptions = NonNullable<string | ServerHeaderExtendedOptions>;
 
 export type WelcomeHeaderParseResult = WelcomeHeader | undefined;
 export type WelcomeHeader = {
   version: PROTOCOL_VERSION;
+  features: (keyof typeof FEATURES)[];
   siteId: UUID;
-  flags: number;
 };
 
 export type ClientHeaderParseResult = ClientParsedHeader | undefined;
 export type ClientParsedHeader = {
   version: PROTOCOL_VERSION;
   expiresAt: Date;
-  expired: boolean;
   flags: number;
 };

@@ -1,19 +1,17 @@
 {
-  "name": "hono-sample-app-integration",
+  "name": "hono-sample-typescript-app-integration",
   "version": "1.0.0",
   "description": "Sample Hono app integrating @zeroad.network/token module",
   "type": "module",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
-    "start": "node index.js"
+    "start": "bun index.ts"
   },
   "dependencies": {
-    "hono": "^4.10.6",
-    "@hono/node-server": "^1.19.6",
-    "@zeroad.network/token": "^0.10.0"
+    "@zeroad.network/token": "^0.12.0",
+    "hono": "^4.10.6"
   },
   "engines": {
-    "node": ">=18",
     "bun": ">=1.3"
   }
 }
