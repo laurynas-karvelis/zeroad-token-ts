@@ -5,7 +5,7 @@ import { setLogLevel } from "./logger";
 
 export * from "./constants";
 export type * from "./constants";
-export { ServerHeader, ClientHeader };
+export { ServerHeader, ClientHeader, setLogLevel };
 
 // Default export as a factory for convenient access
 export function Site(options: ServerHeaderOptions) {
