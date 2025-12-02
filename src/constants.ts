@@ -40,14 +40,12 @@ export type ServerHeaderExtendedOptions = {
 
 export type ServerHeaderOptions = NonNullable<string | ServerHeaderExtendedOptions>;
 
-export type WelcomeHeaderParseResult = WelcomeHeader | undefined;
 export type WelcomeHeader = {
   version: PROTOCOL_VERSION;
   features: (keyof typeof FEATURES)[];
   siteId: UUID;
 };
 
-export type ClientHeaderParseResult = ClientParsedHeader | undefined;
 export type ClientParsedHeader = {
   version: PROTOCOL_VERSION;
   expiresAt: Date;

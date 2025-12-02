@@ -1,22 +1,22 @@
 import { randomUUID } from "crypto";
 
 import { Context, Hono, Next } from "hono";
-import { ZeroAdNetwork, FEATURES } from "@zeroad.network/token";
+import { Site, FEATURES } from "@zeroad.network/token";
 
 /**
  * Module initialization (done once on startup)
  *
  * You can provide your site's "Welcome Header" value, for example, by passing in a process.env variable:
- *   const zeroAd = ZeroAdNetwork(process.env.ZERO_AD_NETWORK_WELCOME_HEADER_VALUE);
+ *   const site = Site(process.env.ZERO_AD_NETWORK_WELCOME_HEADER_VALUE);
  *
  * Or by passing in an options object to announce your site feature list, like this:
- *   const zeroAd = ZeroAdNetwork({
+ *   const site = Site({
  *     siteId: 'd867b6ff-cb12-4363-be54-db4cec523235',
  *     features: [FEATURES.ADS_OFF, FEATURES.COOKIE_CONSENT_OFF, FEATURES.MARKETING_DIALOG_OFF]
  *   });
  */
 
-const zeroAd = ZeroAdNetwork({
+const site = Site({
   // for demo purposes lets generate a siteId UUID value for now
   siteId: randomUUID(),
   // and specify a list of site supported features
@@ -26,7 +26,7 @@ const zeroAd = ZeroAdNetwork({
 // -----------------------------------------------------------------------------
 // Hono app
 // -----------------------------------------------------------------------------
-type TokenContext = ReturnType<typeof zeroAd.parseToken>;
+type TokenContext = ReturnType<typeof site.parseToken>;
 
 const app = new Hono<{ Variables: { tokenContext: TokenContext } }>();
 
@@ -35,10 +35,10 @@ const app = new Hono<{ Variables: { tokenContext: TokenContext } }>();
 // -----------------------------------------------------------------------------
 app.use("*", async (c: Context, next: Next) => {
   // Inject server header into every response
-  c.header(zeroAd.SERVER_HEADER_NAME, zeroAd.SERVER_HEADER_VALUE);
+  c.header(site.SERVER_HEADER_NAME, site.SERVER_HEADER_VALUE);
 
   // Process request token from incoming client token header value.
-  const tokenContext = zeroAd.parseToken(c.req.header(zeroAd.CLIENT_HEADER_NAME));
+  const tokenContext = site.parseToken(c.req.header(site.CLIENT_HEADER_NAME));
 
   // Attach processed token info to context for downstream usage
   c.set("tokenContext", tokenContext);

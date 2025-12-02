@@ -1,6 +1,6 @@
 {
   "name": "@zeroad.network/token",
-  "version": "0.12.0",
+  "version": "0.13.0",
   "license": "Apache-2.0",
   "repository": "github:laurynas-karvelis/zeroad-token-ts",
   "homepage": "https://zeroad.network",
@@ -41,9 +41,6 @@
       "types": "./dist/browser.d.mts",
       "default": "./dist/browser.mjs"
     }
-  },
-  "output": {
-    "exports": "named"
   },
   "scripts": {
     "keys:generate": "bun run ./src/tools/cli.ts",

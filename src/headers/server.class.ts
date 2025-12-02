@@ -5,7 +5,7 @@ import {
   FEATURES,
   ServerHeaderOptions,
   UUID,
-  WelcomeHeaderParseResult,
+  WelcomeHeader,
 } from "../constants";
 import {
   assert,
@@ -22,7 +22,7 @@ const SEPARATOR = "^";
 const SITE_FEATURES_NATIVE = getSiteFeaturesNative();
 
 export class ServerHeader {
-  NAME = SERVER_HEADERS.WELCOME.toLowerCase();
+  NAME = SERVER_HEADERS.WELCOME;
   VALUE: string;
 
   constructor(options: ServerHeaderOptions) {
@@ -54,7 +54,7 @@ export class ServerHeader {
     return [encodedSiteId, CURRENT_PROTOCOL_VERSION, flags].join(SEPARATOR);
   }
 
-  static decode(headerValue: string | undefined): WelcomeHeaderParseResult {
+  static decode(headerValue: string | undefined): WelcomeHeader | undefined {
     if (!headerValue?.length) return;
 
     try {

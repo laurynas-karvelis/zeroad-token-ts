@@ -44,23 +44,23 @@ Take the simplest JavaScript example as a reference. The most basic, and honestl
 
 ```js
 import express from "express";
-import { ZeroAdNetwork } from "@zeroad.network/token";
+import { Site } from "@zeroad.network/token";
 
 const app = express();
 
 // Initialize your Zero Ad Network module
 // Welcome Header Value acquired during Site Registration process at Zero Ad Network platform
 const ZERO_AD_NETWORK_WELCOME_HEADER_VALUE = "AZqnKU56eIC7vCD1PPlwHg^1^3";
-const zeroAd = ZeroAdNetwork(ZERO_AD_NETWORK_WELCOME_HEADER_VALUE);
+const site = Site(ZERO_AD_NETWORK_WELCOME_HEADER_VALUE);
 
 app
   .use((req, res, next) => {
     // X-Better-Web-Welcome header injection can could have it's own simple middleware like this:
-    res.set(zeroAd.SERVER_HEADER_NAME, zeroAd.SERVER_HEADER_VALUE);
+    res.set(site.SERVER_HEADER_NAME, site.SERVER_HEADER_VALUE);
 
     // Process request token from incoming client token header value.
     // And attach processed token info to request for downstream usage.
-    req.tokenContext = zeroAd.parseToken(req.get[zeroAd.CLIENT_HEADER_NAME]);
+    req.tokenContext = site.parseToken(req.get[site.CLIENT_HEADER_NAME]);
 
     next();
   })

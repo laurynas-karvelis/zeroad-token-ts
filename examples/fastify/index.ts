@@ -1,22 +1,22 @@
 import { randomUUID } from "crypto";
 
 import Fastify from "fastify";
-import { ZeroAdNetwork, FEATURES } from "@zeroad.network/token";
+import { Site, FEATURES } from "@zeroad.network/token";
 
 /**
  * Module initialization (done once on startup)
  *
  * You can provide your site's "Welcome Header" value, for example, by passing in a process.env variable:
- *   const zeroAd = ZeroAdNetwork(process.env.ZERO_AD_NETWORK_WELCOME_HEADER_VALUE);
+ *   const site = Site(process.env.ZERO_AD_NETWORK_WELCOME_HEADER_VALUE);
  *
  * Or by passing in an options object to announce your site feature list, like this:
- *   const zeroAd = ZeroAdNetwork({
+ *   const site = Site({
  *     siteId: 'd867b6ff-cb12-4363-be54-db4cec523235',
  *     features: [FEATURES.ADS_OFF, FEATURES.COOKIE_CONSENT_OFF, FEATURES.MARKETING_DIALOG_OFF]
  *   });
  */
 
-const zeroAd = ZeroAdNetwork({
+const site = Site({
   // for demo purposes lets generate a siteId UUID value for now
   siteId: randomUUID(),
   // and specify a list of site supported features
@@ -30,7 +30,7 @@ const app = Fastify();
 
 declare module "fastify" {
   interface FastifyRequest {
-    tokenContext: ReturnType<typeof zeroAd.parseToken>;
+    tokenContext: ReturnType<typeof site.parseToken>;
   }
 }
 
@@ -39,11 +39,11 @@ declare module "fastify" {
 // -----------------------------------------------------------------------------
 app.addHook("onRequest", async (request, reply) => {
   // Inject server header into every response
-  reply.header(zeroAd.SERVER_HEADER_NAME, zeroAd.SERVER_HEADER_VALUE);
+  reply.header(site.SERVER_HEADER_NAME, site.SERVER_HEADER_VALUE);
 
   // Process request token from incoming client token header value.
   // And attach processed token info to request for downstream usage.
-  request.tokenContext = zeroAd.parseToken(request.headers[zeroAd.CLIENT_HEADER_NAME]);
+  request.tokenContext = site.parseToken(request.headers[site.CLIENT_HEADER_NAME]);
 });
 
 // -----------------------------------------------------------------------------

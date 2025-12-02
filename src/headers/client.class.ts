@@ -1,4 +1,4 @@
-import { CLIENT_HEADERS, ClientHeaderParseResult, PROTOCOL_VERSION, FEATURES } from "../constants";
+import { CLIENT_HEADERS, PROTOCOL_VERSION, FEATURES, ClientParsedHeader } from "../constants";
 import { fromBase64, getSiteFeaturesNative, hasFeature, setFeatures, toBase64 } from "../helpers";
 import { importPrivateKey, importPublicKey, KeyObject, nonce, sign, verify } from "../native.crypto";
 import { log } from "../logger";
@@ -22,7 +22,7 @@ export class ClientHeader {
   private publicKey;
   private privateKey;
 
-  NAME = CLIENT_HEADERS.HELLO.toLowerCase();
+  NAME = CLIENT_HEADERS.HELLO;
 
   constructor(publicKey: string, privateKey?: string) {
     this.publicKey = publicKey;
@@ -32,11 +32,9 @@ export class ClientHeader {
   parseToken(headerValue: string | string[] | undefined) {
     const headerValueAsString = Array.isArray(headerValue) ? headerValue[0] : headerValue;
     const data = this.decode(headerValueAsString);
-
-    const expired = !data || data.expiresAt.getTime() < Date.now();
     const result: Partial<Record<keyof typeof FEATURES, boolean>> = {};
 
-    if (!data || expired) {
+    if (!data || data.expiresAt.getTime() < Date.now()) {
       for (const [feature] of SITE_FEATURES_NATIVE) {
         result[feature] = false;
       }
@@ -51,7 +49,7 @@ export class ClientHeader {
     return result as Record<keyof typeof FEATURES, boolean>;
   }
 
-  decode(headerValue: string | undefined): ClientHeaderParseResult {
+  decode(headerValue: string | undefined): ClientParsedHeader | undefined {
     if (!headerValue?.length) return;
     if (!this.cryptoPublicKey) this.cryptoPublicKey = importPublicKey(this.publicKey);
 

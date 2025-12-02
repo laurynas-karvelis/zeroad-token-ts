@@ -8,7 +8,7 @@ export type * from "./constants";
 export { ServerHeader, ClientHeader };
 
 // Default export as a factory for convenient access
-export function ZeroAdNetwork(options: ServerHeaderOptions) {
+export function Site(options: ServerHeaderOptions) {
   const serverHeader = new ServerHeader(options);
   const clientHeader = new ClientHeader(ZEROAD_NETWORK_PUBLIC_KEY);
 
