@@ -1,28 +1,75 @@
-## Introduction
+# Introduction
 
-**@zeroad.network/token** is a TypeScript ready module meant to be used by partnering sites of [Zero Ad Network](https://zeroad.network) platform. It's a lightweight module that works on Nodejs v18 and above, Bun v1.1.0 and above, and Deno v2.0.0 and above runtimes.
+This NPM module is meant to be used by sites, participating in [Zero Ad Network](https://zeroad.network) program, that are running in either Node.js, Bun or Deno runtimes. The `@zeroad.network/token` module a lightweight, TypeScript ready, fully open source, is well tested and has no production dependencies.
 
-This module allows a Zero Ad Network program partnering sites and Web APIs to verify determine if incoming web requests are coming from our browser extension users with active subscription.
+You will find the official Zero Ad Network documentation at [docs.zeroad.network](https://docs.zeroad.network). Up-to-date and in depth guides, how-to's and platform implementation details can be found there.
 
-Their browser extension will send the `X-Better-Web-Hello` Request Header which will let our module to verify it's our actively subscribed user and will allow your site to make a decision whether to disable ads, paywalls or enable access to otherwise paid content of yours.
+## Runtime compatibility
 
-ZeroAd user browser extension will measure how many times and how long they spent on each resource of your website that sends the `X-Better-Web-Welcome` token. This information will go back to us and at the end of each month based on how large the active user base is and how much competition you got, you'll get awarded from each user's monthly subscription paid amount based on their usage patterns interacting with your site.
+| Runtime | Compatibility | ESM | CJS |
+| :------ | :------------ | :-: | :-: |
+| Node.js | 18+           | ✅  | ✅  |
+| Bun     | 1.1.0+        | ✅  | ✅  |
+| Deno    | 2.0.0+        | ✅  | ✅  |
 
-## Setup
+## Purpose
 
-If you already have your site registered with us, you can skip the section below.
+It helps partnered site developer to:
 
-### Register your website or web API
+- Inject a valid site's HTTP Response Header known as "Welcome Header" to every endpoint. An example:
+  ```http
+  X-Better-Web-Welcome: "AZqnKU56eIC7vCD1PPlwHg^1^3"
+  ```
+- Check for Zero Ad Network user's token presence that gets injected as a HTTP Request Header by their browser extension. An example of such Request Header:
+  ```http
+  X-Better-Web-Hello: "Aav2IXRoh0oKBw==.2yZfC2/pM9DWfgX+von4IgWLmN9t67HJHLiee/gx4+pFIHHurwkC3PCHT1Kaz0yUhx3crUaxST+XLlRtJYacAQ=="
+  ```
+- If found, parse the token from the HTTP Request Header value and verify its integrity.
+- (Optionally) Generate a valid "Welcome Header" value when `siteId` UUID and site `features` array are provided.
 
-Sign up with us by navigating in your browser to [sign up](https://zeroad.network/login), once you've logged in successfully, go to and [add a project](https://zeroad.network/publisher/sites/add) page and register your site.
+## Implementation details
 
-In the second step of the Site registration process you'll be presented with your unique `X-Better-Web-Welcome` header value for that site. Your website must respond with this header in all publicly accessible endpoints that contain HTML or RESTful response types. This will let ZeroAd Network users know that you are participating in the program.
+The modules uses `node:crypto` runtime module to ensure user's Request Header payload is valid by verifying its signature for the payload using Zero Ad Network's public ED25519 cryptographic key which is supplied within the module. Then:
 
-## Module Installation
+- User's token payload is decoded and token's protocol version, expiration timestamp and site's feature list are extracted.
+- A map of site's features and their toggle states is generated.
+- An expired token will produce a feature list with all flags being set to `false`.
 
-As it is written in TypeScript, all types and interfaces are available. Also, this package works well in `mjs` (ESM) and `cjs` (CJS - older node versions) environments. You choose to either use `import` or `require()` statements. Imports are always preferred.
+Parsed token result example:
 
-Install this package using your favourite package manager:
+```js
+{
+  ADS_OFF: boolean,
+  COOKIE_CONSENT_OFF: boolean,
+  MARKETING_DIALOG_OFF: boolean,
+  CONTENT_PAYWALL_OFF: boolean,
+  SUBSCRIPTION_ACCESS_ON: boolean,
+};
+```
+
+User's token payload verification is done locally on within your app and no data leaves your server.
+
+When a token is present, parsing and token integrity verification will roughly add between `0.06ms` to `0.6ms` to the total endpoint execution time (as per testing done on a M1 MacBook Pro). Your mileage will vary depending on your hardware, but the impact should stay minimal.
+
+As per our exploratory test results in attempts to cache token and its parsed results in Redis - it takes longer to retrieve the cached result than to verify token payload integrity.
+
+## Why to join
+
+By partnering with Zero Ad Network your site establishes a new stream of revenue enabling you to provide a tangible and meaningful value while simultaneously providing a pure, clean and unobstructed site UI that everyone loves.
+
+With every new site joining us, it becomes easier to reshape the internet closer to its original intention - a joyful and wonderful experience for everyone.
+
+## Onboard your site
+
+To register your site, [sign up](https://zeroad.network/login) with Zero Ad Network and [register your site](https://zeroad.network/publisher/sites/add). On the second step of the Site registration process you'll be provided with your unique `X-Better-Web-Welcome` header value.
+
+If you decide for your site to participate in Zero Ad Network program, then it must respond with this header at all times on every publicly accessible endpoint containing HTML or RESTful response. When Zero Ad Network users visit your site, this allows their browser extension to know your site is participating in the program.
+
+## Module installation
+
+Great news for TypeScript enjoyers, the module is written purely in TypeScript, hence all types and interfaces are readily available. The module works well in EcmaScript (`import {} from ""`) and CommonJS `const {} = require("")` environments. If unsure - prefer ESM when possible.
+
+To install the module use your favourite package manager:
 
 ```shell
 # npm
@@ -36,11 +83,22 @@ pnpm add @zeroad.network/token
 
 # or Bun
 bun add @zeroad.network/token
+
+# or Deno
+deno add npm:@zeroad.network/token
 ```
 
-# Examples
+## Examples
 
-Take the simplest JavaScript example as a reference. The most basic, and honestly, quite complete use with `express` v.5 could look similar to this:
+To find more example implementations for `Express.js` (JavaScript), `Hono` and `Fastify` (both TypeScript), please go to [examples section on our Github repository](https://github.com/laurynas-karvelis/zeroad-token-ts/tree/main/examples/).
+
+Take this JavaScript example as a quick reference. The example will show how to:
+
+- Inject the "Welcome Header" into each response;
+- Parse user's token from their request header;
+- Use the `tokenContext` value later in your controllers and templates.
+
+An Express.js v.5 example of a minimal app:
 
 ```js
 import express from "express";
@@ -48,27 +106,28 @@ import { Site } from "@zeroad.network/token";
 
 const app = express();
 
-// Initialize your Zero Ad Network module
-// Welcome Header Value acquired during Site Registration process at Zero Ad Network platform
+// Initialize your Zero Ad Network module once at startup.
+// "Welcome Header" value is acquired during Site's registration process at Zero Ad Network platform (see https://zeroad.network).
 const ZERO_AD_NETWORK_WELCOME_HEADER_VALUE = "AZqnKU56eIC7vCD1PPlwHg^1^3";
 const site = Site(ZERO_AD_NETWORK_WELCOME_HEADER_VALUE);
 
 app
+  // Your middleware
   .use((req, res, next) => {
-    // X-Better-Web-Welcome header injection can could have it's own simple middleware like this:
+    // Inject "X-Better-Web-Welcome" header
     res.set(site.SERVER_HEADER_NAME, site.SERVER_HEADER_VALUE);
 
-    // Process request token from incoming client token header value.
-    // And attach processed token info to request for downstream usage.
+    // Parse the request token from incoming client token header value.
+    // And attach parsed info to request object for downstream usage.
     req.tokenContext = site.parseToken(req.get[site.CLIENT_HEADER_NAME]);
 
     next();
   })
   .get("/", (req, res) => {
-    // For example:
+    // If you would print it's contents:
     console.log(req.tokenContext);
 
-    // Will produce the following structure:
+    // This will produce:
     req.tokenContext = {
       // If set to true: Render no advertisements anywhere on the page
       ADS_OFF: boolean,
@@ -92,19 +151,3 @@ app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`);
 });
 ```
-
-For all example implementations such as `Express.js` (JavaScript), `Hono` and `Fastify` (both are TypeScript), please go to [see more examples](https://github.com/laurynas-karvelis/zeroad-token-ts/tree/main/examples/).
-
-P.S.: Each web request coming from active subscriber using their Zero Ad Network browser extension will incur a tiny fraction of CPU computation cost to verify the token data matches its encrypted signature. On modern web infrastructure a request execution time will increase roughly by ~0.06ms to 0.2ms or so. Mileage might vary, but the impact is minimal.
-
-# Final thoughts
-
-If no user of ours interacts with your website or web app, you lose nothing. You can keep showing ads to normal users, keep your paywalls etc.
-
-We hope the opposite will happen and you'll realize how many people value pure, clean content created that is meant for them, actual people, that brings tangible and meaningful value for everyone.
-
-Each website that joins us, becomes a part of re-making the web as it originally was intended to be - a joyful and wonderful experience once again.
-
-**Thank you!**
-
-> The "Zero Ad Network" team.
