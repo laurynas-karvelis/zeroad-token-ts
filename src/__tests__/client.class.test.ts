@@ -1,5 +1,5 @@
 import { describe, test, expect } from "bun:test";
-import { generateKeys } from "../native.crypto";
+import { generateKeys } from "../crypto";
 import { ClientHeader } from "../headers/client.class";
 import { CURRENT_PROTOCOL_VERSION, FEATURES, ZEROAD_NETWORK_PUBLIC_KEY } from "../constants";
 

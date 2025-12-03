@@ -1,5 +1,5 @@
-const assert = require("node:assert");
-const { Site, FEATURES, SERVER_HEADERS, CLIENT_HEADERS } = require("../dist/index.cjs");
+import assert from "node:assert";
+import { Site, FEATURES, SERVER_HEADERS, CLIENT_HEADERS } from "../../dist/index.mjs";
 
 (() => {
   const site = Site({

@@ -1,4 +1,4 @@
-import { randomUUID } from "crypto";
+import { randomUUID } from "node:crypto";
 
 import Fastify from "fastify";
 import { Site, FEATURES } from "@zeroad.network/token";

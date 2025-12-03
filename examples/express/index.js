@@ -1,4 +1,4 @@
-import { randomUUID } from "crypto";
+import { randomUUID } from "node:crypto";
 
 import express from "express";
 import { Site, FEATURES } from "@zeroad.network/token";

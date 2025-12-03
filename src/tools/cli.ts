@@ -1,4 +1,4 @@
-import { generateKeys } from "../native.crypto";
+import { generateKeys } from "../crypto";
 
 const { privateKey, publicKey } = generateKeys();
 

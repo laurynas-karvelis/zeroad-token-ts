@@ -1,6 +1,6 @@
 import { CLIENT_HEADERS, PROTOCOL_VERSION, FEATURES, ClientParsedHeader } from "../constants";
 import { fromBase64, getSiteFeaturesNative, hasFeature, setFeatures, toBase64 } from "../helpers";
-import { importPrivateKey, importPublicKey, KeyObject, nonce, sign, verify } from "../native.crypto";
+import { importPrivateKey, importPublicKey, KeyObject, nonce, sign, verify } from "../crypto";
 import { log } from "../logger";
 
 const VERSION_BYTES = 1;

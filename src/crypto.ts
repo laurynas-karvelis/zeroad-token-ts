@@ -5,9 +5,9 @@ import {
   verify as nodeVerify,
   randomBytes,
   generateKeyPairSync,
-} from "crypto";
+} from "node:crypto";
 
-export { KeyObject } from "crypto";
+export { KeyObject } from "node:crypto";
 
 export const generateKeys = () => {
   const { publicKey, privateKey } = generateKeyPairSync("ed25519");
