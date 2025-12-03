@@ -1,8 +1,10 @@
 # Introduction
 
-This NPM module is meant to be used by sites participating in [Zero Ad Network](https://zeroad.network) program, that are running in either Node.js, Bun or Deno runtimes. The `@zeroad.network/token` module is a lightweight, TypeScript ready, fully open source, well tested and has no production dependencies.
+This NPM module is meant to be used by sites participating in [Zero Ad Network](https://zeroad.network) program, that are running in either Node.js, Bun or Deno runtimes.
 
-You will find the official Zero Ad Network documentation at [docs.zeroad.network](https://docs.zeroad.network). Up-to-date and in depth guides, how-to's and platform implementation details can be found there.
+The `@zeroad.network/token` module acts as an HTTP‑header‑based "access / entitlement token" library. It is a lightweight, TypeScript ready, fully open source, well tested and has no production dependencies.
+
+Up-to-date and in depth guides, how-to's and platform implementation details can be found at [the official Zero Ad Network documentation portal](https://docs.zeroad.network).
 
 ## Runtime compatibility
 
