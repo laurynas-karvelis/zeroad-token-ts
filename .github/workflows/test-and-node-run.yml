@@ -20,7 +20,7 @@ jobs:
         run: bun install
 
       - name: Run Bun tests
-        run: bun test
+        run: bun run test
 
   nodejs-smoke-tests:
     runs-on: ubuntu-latest

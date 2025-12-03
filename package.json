@@ -46,7 +46,7 @@
     "keys:generate": "bun run ./src/tools/cli.ts",
     "prettier": "prettier . --write",
     "build": "pkgroll --target=node18",
-    "test": "bun test"
+    "test": "bun test ./src"
   },
   "dependencies": {},
   "devDependencies": {
