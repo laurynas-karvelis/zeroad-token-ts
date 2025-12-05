@@ -1,32 +1,21 @@
-import { randomUUID } from "node:crypto";
-
 import { Context, Hono, Next } from "hono";
 import { Site, FEATURES } from "@zeroad.network/token";
 
 /**
  * Module initialization (once at startup)
- *
- * Option 1: Provide the pre-generated "Welcome Header" value, e.g., via process.env:
- *   const site = Site(process.env.ZERO_AD_NETWORK_WELCOME_HEADER_VALUE);
- *
- * Option 2: Pass an options object to define your site's feature list:
- *   const site = Site({
- *     siteId: 'd867b6ff-cb12-4363-be54-db4cec523235',
- *     features: [FEATURES.ADS_OFF, FEATURES.COOKIE_CONSENT_OFF, FEATURES.MARKETING_DIALOG_OFF]
- *   });
  */
 
 const site = Site({
-  // For demo purposes, we'll generate a siteId UUID
-  siteId: randomUUID(),
-  // Specify supported site features
-  features: [FEATURES.ADS_OFF, FEATURES.COOKIE_CONSENT_OFF, FEATURES.MARKETING_DIALOG_OFF],
+  // Pass in `clientId` you received registering your site on Zero Ad Network platform
+  clientId: "Z2CclA8oXIT1e0QmqTWF8w",
+  // Specify supported site features only
+  features: [FEATURES.CLEAN_WEB, FEATURES.ONE_PASS],
 });
 
 // -----------------------------------------------------------------------------
 // Hono app setup
 // -----------------------------------------------------------------------------
-type TokenContext = ReturnType<typeof site.parseToken>;
+type TokenContext = ReturnType<typeof site.parseClientToken>;
 const app = new Hono<{ Variables: { tokenContext: TokenContext } }>();
 
 // -----------------------------------------------------------------------------
@@ -37,7 +26,7 @@ app.use("*", async (c: Context, next: Next) => {
   c.header(site.SERVER_HEADER_NAME, site.SERVER_HEADER_VALUE);
 
   // Parse incoming user token from client header
-  const tokenContext = site.parseToken(c.req.header(site.CLIENT_HEADER_NAME));
+  const tokenContext = site.parseClientToken(c.req.header(site.CLIENT_HEADER_NAME));
 
   // Attach parsed token info to context for downstream usage
   c.set("tokenContext", tokenContext);
@@ -62,11 +51,12 @@ app.get("/", (c) => {
 
         <h3>Site Feature toggles to be used while rendering this page:</h3>
         <ul>
-          <li>Skip rendering Advertisements: ${state(tokenContext.ADS_OFF)}</li>
-          <li>Skip rendering Cookie Consent Dialog: ${state(tokenContext.COOKIE_CONSENT_OFF)}</li>
-          <li>Skip rendering Marketing Dialog: ${state(tokenContext.MARKETING_DIALOG_OFF)}</li>
-          <li>Remove Content Paywall: ${state(tokenContext.CONTENT_PAYWALL_OFF)}</li>
-          <li>Provide SaaS Access to Basic Subscription Plan: ${state(tokenContext.SUBSCRIPTION_ACCESS_ON)}</li>
+          <li>Hide Advertisements: ${state(tokenContext.HIDE_ADVERTISEMENTS)}</li>
+          <li>Hide Cookie Consent Dialog: ${state(tokenContext.HIDE_COOKIE_CONSENT_SCREEN)}</li>
+          <li>Hide Marketing Dialogs: ${state(tokenContext.HIDE_MARKETING_DIALOGS)}</li>
+          <li>Disable 3rd Party non-functional tracking: ${state(tokenContext.DISABLE_NON_FUNCTIONAL_TRACKING)}</li>
+          <li>Disable Content Paywalls: ${state(tokenContext.DISABLE_CONTENT_PAYWALL)}</li>
+          <li>Enable Free access to your Base Subscription plan: ${state(tokenContext.ENABLE_SUBSCRIPTION_ACCESS)}</li>
         </ul>
       </body>
     </html>

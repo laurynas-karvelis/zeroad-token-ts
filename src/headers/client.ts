@@ -10,12 +10,12 @@ const SEPARATOR = ".";
 const SITE_FEATURES_NATIVE = getSiteFeaturesNative();
 
 export type FEATURE_FLAG =
-  | "ADVERTISEMENTS"
-  | "COOKIE_CONSENT_SCREEN"
-  | "NON_FUNCTIONAL_TRACKING"
-  | "MARKETING_DIALOGS"
-  | "CONTENT_PAYWALL"
-  | "SUBSCRIPTION_ACCESS";
+  | "HIDE_ADVERTISEMENTS"
+  | "HIDE_COOKIE_CONSENT_SCREEN"
+  | "HIDE_MARKETING_DIALOGS"
+  | "DISABLE_NON_FUNCTIONAL_TRACKING"
+  | "DISABLE_CONTENT_PAYWALL"
+  | "ENABLE_SUBSCRIPTION_ACCESS";
 
 export type ClientHeaderValue = string | string[] | undefined;
 export type FeatureFlags = Record<FEATURE_FLAG, boolean>;
@@ -37,12 +37,12 @@ export function parseClientToken(headerValue: ClientHeaderValue, clientId: strin
   const hasOnePass = features.includes("ONE_PASS");
 
   return {
-    ADVERTISEMENTS: !hasCleanWeb,
-    COOKIE_CONSENT_SCREEN: !hasCleanWeb,
-    NON_FUNCTIONAL_TRACKING: !hasCleanWeb,
-    MARKETING_DIALOGS: !hasCleanWeb,
-    CONTENT_PAYWALL: !hasOnePass,
-    SUBSCRIPTION_ACCESS: hasOnePass,
+    HIDE_ADVERTISEMENTS: hasCleanWeb,
+    HIDE_COOKIE_CONSENT_SCREEN: hasCleanWeb,
+    HIDE_MARKETING_DIALOGS: hasCleanWeb,
+    DISABLE_NON_FUNCTIONAL_TRACKING: hasCleanWeb,
+    DISABLE_CONTENT_PAYWALL: hasOnePass,
+    ENABLE_SUBSCRIPTION_ACCESS: hasOnePass,
   };
 }
 

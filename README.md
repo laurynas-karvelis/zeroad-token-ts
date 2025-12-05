@@ -18,10 +18,11 @@ For detailed guides and implementation instructions, see the [official Zero Ad N
 
 The module helps developers to:
 
+- Generate a valid "Welcome Header" when `clientId` and `features` are provided.
 - Inject a valid site's HTTP Response Header (**Welcome Header**) into every endpoint. Example:
 
   ```http
-  X-Better-Web-Welcome: "AZqnKU56eIC7vCD1PPlwHg^1^3"
+  X-Better-Web-Welcome: "Z2CclA8oXIT1e0QmqTWF8w^1^3"
   ```
 
 - Detect and parse Zero Ad Network user tokens sent via HTTP Request Header. Example:
@@ -30,8 +31,7 @@ The module helps developers to:
   X-Better-Web-Hello: "Aav2IXRoh0oKBw==.2yZfC2/pM9DWfgX+von4IgWLmN9t67HJHLiee/gx4+pFIHHurwkC3PCHT1Kaz0yUhx3crUaxST+XLlRtJYacAQ=="
   ```
 
-- Verify token integrity locally.
-- Optionally generate a valid "Welcome Header" when `siteId` and `features` are provided.
+- Verify client token integrity locally.
 
 ## Implementation Details
 
@@ -43,11 +43,12 @@ Parsed token example:
 
 ```js
 {
-  ADS_OFF: boolean,
-  COOKIE_CONSENT_OFF: boolean,
-  MARKETING_DIALOG_OFF: boolean,
-  CONTENT_PAYWALL_OFF: boolean,
-  SUBSCRIPTION_ACCESS_ON: boolean,
+  HIDE_ADVERTISEMENTS: boolean,
+  HIDE_COOKIE_CONSENT_SCREEN: boolean,
+  HIDE_MARKETING_DIALOGS: boolean,
+  DISABLE_NON_FUNCTIONAL_TRACKING: boolean,
+  DISABLE_CONTENT_PAYWALL: boolean,
+  ENABLE_SUBSCRIPTION_ACCESS: boolean,
 };
 ```
 
@@ -59,9 +60,11 @@ Parsed token example:
 
 Partnering with Zero Ad Network allows your site to:
 
-- Generate a new revenue stream
-- Provide a clean, unobstructed user experience
-- Contribute to a more joyful, user-friendly internet
+- Generate a new revenue stream by:
+  - Providing a clean, unobstructed user experience
+  - Removing paywalls and enabling free access to your base subscription plan
+  - Or both combined
+- Contribute to a truly joyful, user-friendly internet experience
 
 ## Onboarding Your Site
 
@@ -113,9 +116,12 @@ import { Site } from "@zeroad.network/token";
 const app = express();
 
 // Initialize the Zero Ad Network module at app startup.
-// The "Welcome Header" value is obtained during site registration on the Zero Ad Network platform (https://zeroad.network).
-const ZERO_AD_NETWORK_WELCOME_HEADER_VALUE = "AZqnKU56eIC7vCD1PPlwHg^1^3";
-const site = Site(ZERO_AD_NETWORK_WELCOME_HEADER_VALUE);
+// Your site's `clientId` value is obtained during site registration on the Zero Ad Network platform (https://zeroad.network).
+const ZERO_AD_NETWORK_CLIENT_ID = "Z2CclA8oXIT1e0QmqTWF8w";
+const site = Site({
+  clientId: ZERO_AD_NETWORK_CLIENT_ID,
+  features: [FEATURES.CLEAN_WEB, FEATURES.ONE_PASS],
+});
 
 app
   // Apply middleware for all routes
@@ -125,7 +131,7 @@ app
 
     // Parse the incoming user token from the request header
     // Attach the parsed token data to the request object for downstream use
-    req.tokenContext = site.parseToken(req.get(site.CLIENT_HEADER_NAME));
+    req.tokenContext = site.parseClientToken(req.get(site.CLIENT_HEADER_NAME));
 
     next();
   })
@@ -135,16 +141,18 @@ app
 
     // Example structure of tokenContext:
     req.tokenContext = {
-      // If true: Hide advertisements on the page
-      ADS_OFF: boolean,
-      // If true: Hide Cookie Consent screens and opt out non-functional trackers
-      COOKIE_CONSENT_OFF: boolean,
-      // If true: Hide marketing dialogs or popups (e.g., newsletter, promotions)
-      MARKETING_DIALOG_OFF: boolean,
-      // If true: Provide automatic access to paywalled content
-      CONTENT_PAYWALL_OFF: boolean,
-      // If true: Provide access to site features behind SaaS subscription (at least basic plan)
-      SUBSCRIPTION_ACCESS_ON: boolean,
+      // If `true`: Hide advertisements on the page
+      HIDE_ADVERTISEMENTS: boolean,
+      // If `true`: Disable all Cookie Consent screens (headers, footers, or dialogs)
+      HIDE_COOKIE_CONSENT_SCREEN: boolean,
+      // If `true`: Disable all marketing dialogs or popups (newsletters, promotions, etc.)
+      HIDE_MARKETING_DIALOGS: boolean,
+      // If `true`: Fully opt out the user of non-functional trackers
+      DISABLE_NON_FUNCTIONAL_TRACKING: boolean,
+      // If `true`: Provide Free access to content behind a paywall (news, articles, etc.)
+      DISABLE_CONTENT_PAYWALL: boolean,
+      // If `true`: Provide Free access to your base subscription plan (if subscription model is present)
+      ENABLE_SUBSCRIPTION_ACCESS: boolean,
     };
 
     // Adjust content in your templates based on tokenContext values

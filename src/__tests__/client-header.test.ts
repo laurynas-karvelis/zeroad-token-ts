@@ -88,12 +88,12 @@ describe("Client Headers", () => {
       const headerValue = encodeClientHeader({ version: CURRENT_PROTOCOL_VERSION, expiresAt, features }, privateKey);
 
       expect(parseClientToken(headerValue, clientId, publicKey)).toEqual({
-        ADVERTISEMENTS: false,
-        COOKIE_CONSENT_SCREEN: false,
-        NON_FUNCTIONAL_TRACKING: false,
-        MARKETING_DIALOGS: false,
-        CONTENT_PAYWALL: true,
-        SUBSCRIPTION_ACCESS: false,
+        HIDE_ADVERTISEMENTS: true,
+        HIDE_COOKIE_CONSENT_SCREEN: true,
+        HIDE_MARKETING_DIALOGS: true,
+        DISABLE_NON_FUNCTIONAL_TRACKING: true,
+        DISABLE_CONTENT_PAYWALL: false,
+        ENABLE_SUBSCRIPTION_ACCESS: false,
       });
     });
 
@@ -103,12 +103,12 @@ describe("Client Headers", () => {
       const headerValue = encodeClientHeader({ version: CURRENT_PROTOCOL_VERSION, expiresAt, features }, privateKey);
 
       expect(parseClientToken(headerValue, clientId, publicKey)).toEqual({
-        ADVERTISEMENTS: true,
-        COOKIE_CONSENT_SCREEN: true,
-        NON_FUNCTIONAL_TRACKING: true,
-        MARKETING_DIALOGS: true,
-        CONTENT_PAYWALL: false,
-        SUBSCRIPTION_ACCESS: true,
+        HIDE_ADVERTISEMENTS: false,
+        HIDE_COOKIE_CONSENT_SCREEN: false,
+        HIDE_MARKETING_DIALOGS: false,
+        DISABLE_NON_FUNCTIONAL_TRACKING: false,
+        DISABLE_CONTENT_PAYWALL: true,
+        ENABLE_SUBSCRIPTION_ACCESS: true,
       });
     });
 
@@ -118,12 +118,12 @@ describe("Client Headers", () => {
       const headerValue = encodeClientHeader({ version: CURRENT_PROTOCOL_VERSION, expiresAt, features }, privateKey);
 
       expect(parseClientToken(headerValue, clientId, publicKey)).toEqual({
-        ADVERTISEMENTS: false,
-        COOKIE_CONSENT_SCREEN: false,
-        NON_FUNCTIONAL_TRACKING: false,
-        MARKETING_DIALOGS: false,
-        CONTENT_PAYWALL: false,
-        SUBSCRIPTION_ACCESS: true,
+        HIDE_ADVERTISEMENTS: true,
+        HIDE_COOKIE_CONSENT_SCREEN: true,
+        HIDE_MARKETING_DIALOGS: true,
+        DISABLE_NON_FUNCTIONAL_TRACKING: true,
+        DISABLE_CONTENT_PAYWALL: true,
+        ENABLE_SUBSCRIPTION_ACCESS: true,
       });
     });
 
@@ -133,12 +133,12 @@ describe("Client Headers", () => {
       const headerValue = encodeClientHeader({ version: CURRENT_PROTOCOL_VERSION, expiresAt, features }, privateKey);
 
       expect(parseClientToken(headerValue, clientId, publicKey)).toEqual({
-        ADVERTISEMENTS: true,
-        COOKIE_CONSENT_SCREEN: true,
-        NON_FUNCTIONAL_TRACKING: true,
-        MARKETING_DIALOGS: true,
-        CONTENT_PAYWALL: true,
-        SUBSCRIPTION_ACCESS: false,
+        HIDE_ADVERTISEMENTS: false,
+        HIDE_COOKIE_CONSENT_SCREEN: false,
+        HIDE_MARKETING_DIALOGS: false,
+        DISABLE_NON_FUNCTIONAL_TRACKING: false,
+        DISABLE_CONTENT_PAYWALL: false,
+        ENABLE_SUBSCRIPTION_ACCESS: false,
       });
     });
 
@@ -151,12 +151,12 @@ describe("Client Headers", () => {
       );
 
       expect(parseClientToken(headerValue, clientId, publicKey)).toEqual({
-        ADVERTISEMENTS: false,
-        COOKIE_CONSENT_SCREEN: false,
-        NON_FUNCTIONAL_TRACKING: false,
-        MARKETING_DIALOGS: false,
-        CONTENT_PAYWALL: true,
-        SUBSCRIPTION_ACCESS: false,
+        HIDE_ADVERTISEMENTS: true,
+        HIDE_COOKIE_CONSENT_SCREEN: true,
+        HIDE_MARKETING_DIALOGS: true,
+        DISABLE_NON_FUNCTIONAL_TRACKING: true,
+        DISABLE_CONTENT_PAYWALL: false,
+        ENABLE_SUBSCRIPTION_ACCESS: false,
       });
     });
 
@@ -172,12 +172,12 @@ describe("Client Headers", () => {
 
       expect(clientId).not.toBe(serverClientId);
       expect(parseClientToken(headerValue, serverClientId, publicKey)).toEqual({
-        ADVERTISEMENTS: true,
-        COOKIE_CONSENT_SCREEN: true,
-        NON_FUNCTIONAL_TRACKING: true,
-        MARKETING_DIALOGS: true,
-        CONTENT_PAYWALL: true,
-        SUBSCRIPTION_ACCESS: false,
+        HIDE_ADVERTISEMENTS: false,
+        HIDE_COOKIE_CONSENT_SCREEN: false,
+        HIDE_MARKETING_DIALOGS: false,
+        DISABLE_NON_FUNCTIONAL_TRACKING: false,
+        DISABLE_CONTENT_PAYWALL: false,
+        ENABLE_SUBSCRIPTION_ACCESS: false,
       });
     });
 
@@ -190,45 +190,45 @@ describe("Client Headers", () => {
       );
 
       expect(parseClientToken(headerValue, clientId, publicKey)).toEqual({
-        ADVERTISEMENTS: true,
-        COOKIE_CONSENT_SCREEN: true,
-        NON_FUNCTIONAL_TRACKING: true,
-        MARKETING_DIALOGS: true,
-        CONTENT_PAYWALL: true,
-        SUBSCRIPTION_ACCESS: false,
+        HIDE_ADVERTISEMENTS: false,
+        HIDE_COOKIE_CONSENT_SCREEN: false,
+        HIDE_MARKETING_DIALOGS: false,
+        DISABLE_NON_FUNCTIONAL_TRACKING: false,
+        DISABLE_CONTENT_PAYWALL: false,
+        ENABLE_SUBSCRIPTION_ACCESS: false,
       });
     });
 
     test("should not throw if array of strings is provided", () => {
       expect(parseClientToken(["some-value", "another-value"], clientId, publicKey)).toEqual({
-        ADVERTISEMENTS: true,
-        COOKIE_CONSENT_SCREEN: true,
-        NON_FUNCTIONAL_TRACKING: true,
-        MARKETING_DIALOGS: true,
-        CONTENT_PAYWALL: true,
-        SUBSCRIPTION_ACCESS: false,
+        HIDE_ADVERTISEMENTS: false,
+        HIDE_COOKIE_CONSENT_SCREEN: false,
+        HIDE_MARKETING_DIALOGS: false,
+        DISABLE_NON_FUNCTIONAL_TRACKING: false,
+        DISABLE_CONTENT_PAYWALL: false,
+        ENABLE_SUBSCRIPTION_ACCESS: false,
       });
     });
 
     test("should not throw if an empty array is provided", () => {
       expect(parseClientToken([], clientId, publicKey)).toEqual({
-        ADVERTISEMENTS: true,
-        COOKIE_CONSENT_SCREEN: true,
-        NON_FUNCTIONAL_TRACKING: true,
-        MARKETING_DIALOGS: true,
-        CONTENT_PAYWALL: true,
-        SUBSCRIPTION_ACCESS: false,
+        HIDE_ADVERTISEMENTS: false,
+        HIDE_COOKIE_CONSENT_SCREEN: false,
+        HIDE_MARKETING_DIALOGS: false,
+        DISABLE_NON_FUNCTIONAL_TRACKING: false,
+        DISABLE_CONTENT_PAYWALL: false,
+        ENABLE_SUBSCRIPTION_ACCESS: false,
       });
     });
 
     test("should not throw if an undefined param is provided", () => {
       expect(parseClientToken(undefined, clientId, publicKey)).toEqual({
-        ADVERTISEMENTS: true,
-        COOKIE_CONSENT_SCREEN: true,
-        NON_FUNCTIONAL_TRACKING: true,
-        MARKETING_DIALOGS: true,
-        CONTENT_PAYWALL: true,
-        SUBSCRIPTION_ACCESS: false,
+        HIDE_ADVERTISEMENTS: false,
+        HIDE_COOKIE_CONSENT_SCREEN: false,
+        HIDE_MARKETING_DIALOGS: false,
+        DISABLE_NON_FUNCTIONAL_TRACKING: false,
+        DISABLE_CONTENT_PAYWALL: false,
+        ENABLE_SUBSCRIPTION_ACCESS: false,
       });
     });
   });

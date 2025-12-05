@@ -42,12 +42,12 @@ describe("Site()", () => {
 
     const tokenContext = site.parseClientToken(clientHeaderValue);
     expect(tokenContext).toEqual({
-      ADVERTISEMENTS: false,
-      COOKIE_CONSENT_SCREEN: false,
-      NON_FUNCTIONAL_TRACKING: false,
-      MARKETING_DIALOGS: false,
-      CONTENT_PAYWALL: true,
-      SUBSCRIPTION_ACCESS: false,
+      HIDE_ADVERTISEMENTS: true,
+      HIDE_COOKIE_CONSENT_SCREEN: true,
+      HIDE_MARKETING_DIALOGS: true,
+      DISABLE_NON_FUNCTIONAL_TRACKING: true,
+      DISABLE_CONTENT_PAYWALL: false,
+      ENABLE_SUBSCRIPTION_ACCESS: false,
     });
   });
 });
