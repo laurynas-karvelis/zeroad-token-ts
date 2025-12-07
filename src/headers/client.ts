@@ -54,7 +54,7 @@ export type DecodedClientHeader = {
 };
 
 export function decodeClientHeader(
-  headerValue: string | undefined,
+  headerValue: string | null | undefined,
   publicKey: string
 ): DecodedClientHeader | undefined {
   if (!headerValue?.length) return;

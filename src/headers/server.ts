@@ -30,7 +30,7 @@ export type WelcomeHeader = {
   features: (keyof typeof FEATURES)[];
 };
 
-export function decodeServerHeader(headerValue: string | undefined): WelcomeHeader | undefined {
+export function decodeServerHeader(headerValue: string | null | undefined): WelcomeHeader | undefined {
   if (!headerValue?.length) return;
 
   try {
