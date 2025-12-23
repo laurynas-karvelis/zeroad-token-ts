@@ -10,9 +10,6 @@
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "skipLibCheck": false,
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
-    "resolveJsonModule": true,
     "types": ["node", "bun"],
     "lib": ["ESNext", "DOM"]
   },
