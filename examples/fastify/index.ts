@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import path from "node:path";
 import Fastify from "fastify";
 import fastifyView from "@fastify/view";

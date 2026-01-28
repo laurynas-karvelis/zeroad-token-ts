@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import path from "node:path";
 import { Hono } from "hono";
 import { Eta } from "eta";

@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import path from "node:path";
 import express from "express";
 import { Eta } from "eta";
